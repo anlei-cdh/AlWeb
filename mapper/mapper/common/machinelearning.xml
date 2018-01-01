@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common.machinelearning">
+    <!-- Spark ML 分类 - 逻辑回归 -->
+    <select id="getLogisticRegression" resultType="MachineLearning">
+		SELECT genderid labelId,pv,uv,ip,`value` `name` FROM ml_lr_data mld 
+		JOIN common_gender cg ON mld.genderid = cg.id
+	</select>
+    
+    <!-- Spark ML 分类 - 决策树 -->
+    <select id="getDecisionTree" resultType="MachineLearning">
+		SELECT channelid labelId,pv,uv,ip,`value` `name` FROM ml_dt_data mdd 
+		JOIN common_channel cc ON mdd.channelid = cc.id
+	</select>
+    
+	<!-- Spark ML 聚类 -->
+	<select id="getClustering" resultType="MachineLearning">
+		SELECT clusteringid,channelid,pv,`value` AS `name` FROM ml_clustering_data cd 
+		LEFT JOIN common_channel cc ON cd.channelid = cc.id
+	</select>
+	
+	<!-- Spark ML 推荐 - 用户信息 -->
+	<select id="getCfUser" resultType="MachineLearning">
+		SELECT id,`name`,image FROM `ml_cf_user` ORDER BY id ASC LIMIT 5
+	</select>
+	
+	<!-- Spark ML 推荐 - 物品(电影)信息 -->
+	<select id="getCfItem" resultType="MachineLearning">
+	    SELECT id,`name`,image FROM `ml_cf_item` ORDER BY id ASC LIMIT 5
+	</select>
+	
+	<!-- Spark ML 推荐 - 按用户推荐的物品(电影)  -->
+	<select id="getRecommendationItem" resultType="MachineLearning">
+		SELECT itemid AS id,`name`,image FROM `ml_cf_user_data` cud 
+		JOIN ml_cf_item ci ON cud.`itemid` = ci.`id` 
+		WHERE userid = #{id}
+	</select>
+	
+	<!-- Spark ML 推荐 - 按物品(电影)推荐的用户  -->
+	<select id="getRecommendationUser" resultType="MachineLearning">
+		SELECT userid AS id,`name`,image FROM `ml_cf_item_data` cid 
+		JOIN ml_cf_user cu ON cid.`userid` = cu.`id` 
+		WHERE itemid = #{id}
+	</select>
+</mapper>
